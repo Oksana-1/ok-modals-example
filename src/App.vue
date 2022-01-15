@@ -1,52 +1,51 @@
 <template>
   <div class="app">
     <img alt="Vue logo" src="./assets/logo.png" />
-    <h1>TODO list</h1>
-    <div class="app-container">
-      <todo-list />
-    </div>
-    <button @click="showModal">Show modal</button>
-    <app-modal />
+    <h1>Modal plugin example</h1>
+    <button class="btn green" @click="showModal">Show modal</button>
+    <modals-wrapper />
   </div>
 </template>
 
 <script>
-import TodoList from "@/components/TodoList";
+import ModalDialog from "./modals/ModalDialog";
+import "./style.css";
 
 export default {
   name: "App",
-  components: {
-    TodoList,
+  data() {
+    return {
+      params: {
+        id: "Test",
+        modalComponent: ModalDialog,
+        text: "test test test",
+        onConfirm: () => {
+          this.immediateConfirm();
+        },
+        onCancel: () => {
+          this.delayCancel();
+        }
+      }
+    }
   },
   methods: {
     showModal() {
-      const params = {
-        title: "Test!",
-        text: "test test test",
-        onConfirm: () => {
-          return this.alertFunc();
-        },
-      };
-      this.$modal.show(params);
+      this.$modal.create(this.params);
+      this.$modal.show(this.params.id);
     },
-    alertFunc() {
-      alert("Hello!");
+    immediateConfirm() {
+      alert("Confirmed");
+      this.$modal.hide(this.params.id);
     },
-  },
+    delayCancel() {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          alert("Cancelled!");
+          this.$modal.hide(this.params.id);
+          resolve();
+        }, 1000);
+      });
+    }
+  }
 };
 </script>
-
-<style>
-.app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-.app-container {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-</style>

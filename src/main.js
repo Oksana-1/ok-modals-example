@@ -1,7 +1,7 @@
 import Vue from "vue";
 import App from "./App.vue";
-import Modal from "@/plugins/modals/modal";
-Vue.use(Modal);
+import ModalPlugin from "./plugins/ok-modals/ModalPlugin";
+Vue.use(ModalPlugin);
 
 Vue.config.productionTip = false;
 
