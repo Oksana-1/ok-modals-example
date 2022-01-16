@@ -8,20 +8,20 @@
     <template slot="footer">
       <div class="centered">
         <button
-            class="btn margin-side-5"
-            :disabled="disabled"
-            @click="$emit('confirm')"
-            data-test="modal-ok-btn"
+          class="btn margin-side-5"
+          :disabled="disabled"
+          @click="$emit('confirm')"
+          data-test="modal-ok-btn"
         >
-          OK
+          {{ disabled ? "Loading" : "Ok" }}
         </button>
         <button
-            class="btn margin-side-5"
-            :disabled="disabled"
-            @click="$emit('cancel')"
-            data-test="modal-cancel-btn"
+          class="btn margin-side-5"
+          :disabled="disabled"
+          @click="$emit('cancel')"
+          data-test="modal-cancel-btn"
         >
-          Cancel
+          {{ disabled ? "Loading" : "Cancel" }}
         </button>
       </div>
     </template>
@@ -36,17 +36,17 @@ export default {
   props: {
     disabled: {
       type: Boolean,
-      default: false,
+      default: false
     },
     text: {
       type: String,
-      default: "Confirm action",
+      default: "Confirm action"
     },
     isVisible: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
-  components: { ModalBase },
+  components: { ModalBase }
 };
 </script>
