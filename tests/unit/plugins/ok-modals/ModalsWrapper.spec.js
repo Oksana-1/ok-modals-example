@@ -8,19 +8,24 @@ Vue.use(ModalPlugin);
 const FakeComponent = Vue.component("FakeComponent", {
   render(createElement) {
     return createElement("div", {
-      class: { fake: true },
+      class: { fake: true }
     });
   },
   props: {
-    myCustomProps: String,
-  },
+    myCustomProps: String
+  }
 });
 
 let wrapper;
+const mockedCustomEvent = jest.fn();
 
 describe("ModalsWrapper", () => {
   beforeEach(() => {
-    wrapper = mount(ModalsWrapper);
+    wrapper = mount(ModalsWrapper, {
+      listeners: {
+        myCustomEvent: mockedCustomEvent
+      }
+    });
   });
   test("returns a ModalsWrapper component", () => {
     expect(wrapper.exists()).toBe(true);
@@ -29,7 +34,7 @@ describe("ModalsWrapper", () => {
     const createSpyOn = jest.spyOn(wrapper.vm, "createModal");
     await ModalPlugin.EventBus.$emit("create", {
       id: "testId",
-      modalComponent: FakeComponent,
+      modalComponent: FakeComponent
     });
     expect(createSpyOn).toHaveBeenCalled();
     createSpyOn.mockRestore();
@@ -38,27 +43,99 @@ describe("ModalsWrapper", () => {
     const showSpyOn = jest.spyOn(wrapper.vm, "showModal");
     await ModalPlugin.EventBus.$emit("create", {
       id: "testId",
-      modalComponent: FakeComponent,
+      modalComponent: FakeComponent
     });
     await ModalPlugin.EventBus.$emit("show", "testId");
     expect(showSpyOn).toHaveBeenCalled();
     showSpyOn.mockRestore();
   });
+  test("throws an error on `showModal`-method if no id passed", async () => {
+    const consoleSpyOn = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    await ModalPlugin.EventBus.$emit("create", {
+      id: "testId",
+      modalComponent: FakeComponent
+    });
+    await ModalPlugin.EventBus.$emit("show");
+    expect(consoleSpyOn).toHaveBeenCalled();
+    consoleSpyOn.mockRestore();
+  });
+  test("throws an error on `showModal`-method if wrong id passed", async () => {
+    const consoleSpyOn = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    await ModalPlugin.EventBus.$emit("create", {
+      id: "testId",
+      modalComponent: FakeComponent
+    });
+    await ModalPlugin.EventBus.$emit("show", { id: "testId" });
+    expect(consoleSpyOn).toHaveBeenCalled();
+    consoleSpyOn.mockRestore();
+  });
+  test("throws an error on `showModal`-method if id is not found", async () => {
+    const consoleSpyOn = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    await ModalPlugin.EventBus.$emit("create", {
+      id: "testId",
+      modalComponent: FakeComponent
+    });
+    await ModalPlugin.EventBus.$emit("show", "testId1");
+    expect(consoleSpyOn).toHaveBeenCalled();
+    consoleSpyOn.mockRestore();
+  });
   test("runs `hideModal` method on `hide`-event from ModalPlugin.EventBus", async () => {
     const hideSpyOn = jest.spyOn(wrapper.vm, "hideModal");
     await ModalPlugin.EventBus.$emit("create", {
       id: "testId",
-      modalComponent: FakeComponent,
+      modalComponent: FakeComponent
     });
     await ModalPlugin.EventBus.$emit("show", "testId");
     await ModalPlugin.EventBus.$emit("hide", "testId");
     expect(hideSpyOn).toHaveBeenCalled();
     hideSpyOn.mockRestore();
   });
+  test("throws an error on `hideModal`-method if no id passed", async () => {
+    const consoleSpyOn = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    await ModalPlugin.EventBus.$emit("create", {
+      id: "testId",
+      modalComponent: FakeComponent
+    });
+    await ModalPlugin.EventBus.$emit("hide");
+    expect(consoleSpyOn).toHaveBeenCalled();
+    consoleSpyOn.mockRestore();
+  });
+  test("throws an error on `hideModal`-method if wrong id passed", async () => {
+    const consoleSpyOn = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    await ModalPlugin.EventBus.$emit("create", {
+      id: "testId",
+      modalComponent: FakeComponent
+    });
+    await ModalPlugin.EventBus.$emit("hide", { id: "testId" });
+    expect(consoleSpyOn).toHaveBeenCalled();
+    consoleSpyOn.mockRestore();
+  });
+  test("throws an error on `hideModal`-method if id is not found", async () => {
+    const consoleSpyOn = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    await ModalPlugin.EventBus.$emit("create", {
+      id: "testId",
+      modalComponent: FakeComponent
+    });
+    await ModalPlugin.EventBus.$emit("hide", "testId1");
+    expect(consoleSpyOn).toHaveBeenCalled();
+    consoleSpyOn.mockRestore();
+  });
   test("renders passed component correctly", async () => {
     await ModalPlugin.EventBus.$emit("create", {
       id: "testId",
-      modalComponent: FakeComponent,
+      modalComponent: FakeComponent
     });
     await ModalPlugin.EventBus.$emit("show", "testId");
     expect(wrapper.find(".fake").exists()).toBe(true);
@@ -68,13 +145,24 @@ describe("ModalsWrapper", () => {
       id: "testId",
       modalComponent: FakeComponent,
       props: {
-        myCustomProps: "test",
-      },
+        myCustomProps: "test"
+      }
     });
     await ModalPlugin.EventBus.$emit("show", "testId");
     expect(wrapper.findComponent(FakeComponent).props("myCustomProps")).toBe(
       "test"
     );
   });
-  test.todo("passes custom events correctly");
+  test("passes custom events correctly", async () => {
+    await ModalPlugin.EventBus.$emit("create", {
+      id: "testId",
+      modalComponent: FakeComponent
+    });
+    await ModalPlugin.EventBus.$emit("show", "testId");
+    await wrapper
+      .findComponent(FakeComponent)
+      .vm.$emit("myCustomEvent", "event");
+    expect(mockedCustomEvent).toHaveBeenCalled();
+    expect(mockedCustomEvent).toHaveBeenCalledWith("event");
+  });
 });

@@ -3,7 +3,7 @@ module.exports = {
   setupFilesAfterEnv: ["<rootDir>/tests/testSetUp.js"],
   collectCoverage: true,
   collectCoverageFrom: [
-    "**/*.{js,vue}",
+    "src/**/*.{js,vue}",
     "!**/node_modules/**",
   ],
 }
