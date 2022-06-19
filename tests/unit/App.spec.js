@@ -1,9 +1,8 @@
 import { shallowMount } from "@vue/test-utils";
 import App from "../../src/App";
 import Vue from "vue";
-import ModalPlugin from "../../src/plugins/ok-modals/ModalPlugin";
+import ModalPlugin from "ok-modals";
 import ModalDialog from "../../src/modals/ModalDialog";
-import ModalsWrapper from "../../src/plugins/ok-modals/ModalsWrapper";
 import flushPromises from "flush-promises";
 
 Vue.use(ModalPlugin);
@@ -13,9 +12,7 @@ let showModalButton;
 
 describe("App.vue component", () => {
   beforeEach(() => {
-    wrapper = shallowMount(App, {
-      stubs: { ModalsWrapper }
-    });
+    wrapper = shallowMount(App);
     showModalButton = wrapper.find('[data-test="show-modal-btn"]');
     jest.useFakeTimers();
   });
